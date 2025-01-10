@@ -37,8 +37,9 @@ def charge_data(hyper_param, param_adim):
     x_norm_full, y_norm_full, t_norm_full, ya0_norm_full = [], [], [], []
     u_norm_full, v_norm_full, p_norm_full = [], [], []
 
+    f = 0.5 * (hyper_param["H"] / hyper_param["m"]) ** 0.5  # la fréquence de l'écoulement
+    t_max = hyper_param['t_min'] + hyper_param['nb_period'] / f 
     for k in range(nb_simu):
-        # df = pd.read_csv("25_pinns_surrogate/" + "data/" +hyper_param["file"][k])
         df = pd.read_csv("data/" + hyper_param["file"][k])
         df_modified = df.loc[
             (df["Points:0"] >= hyper_param["x_min"])
@@ -46,9 +47,8 @@ def charge_data(hyper_param, param_adim):
             & (df["Points:1"] >= hyper_param["y_min"])
             & (df["Points:1"] <= hyper_param["y_max"])
             & (df["Time"] > hyper_param["t_min"])
-            & (df["Time"] < hyper_param["t_max"])
+            & (df["Time"] < t_max)
             & (df["Points:2"] == 0.0)
-            # pour ne pas avoir dans le cylindre
             & (df["Points:0"] ** 2 + df["Points:1"] ** 2 > (0.025 / 2) ** 2),
             :,
         ].copy()
@@ -63,8 +63,10 @@ def charge_data(hyper_param, param_adim):
             torch.tensor(df_modified["Points:1"].to_numpy(), dtype=torch.float32)
             / param_adim["L"]
         )
+        time_without_modulo = df_modified["Time"].to_numpy() - hyper_param['t_min']
+        time_with_modulo = hyper_param['t_min'] + time_without_modulo % (1/f)
         t_full.append(
-            torch.tensor(df_modified["Time"].to_numpy(), dtype=torch.float32)
+            torch.tensor(time_with_modulo, dtype=torch.float32)
             / (param_adim["L"] / param_adim["V"])
         )
         ya0_full.append(
