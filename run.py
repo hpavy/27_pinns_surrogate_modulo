@@ -31,8 +31,6 @@ class RunSimulation:
         else:
             with open(self.folder_result + "/hyper_param.json", "r") as file:
                 self.hyper_param = json.load(file)
-
-        # Data loading
         (
             X_train,
             U_train,
@@ -68,8 +66,10 @@ class RunSimulation:
                 weight_data = self.hyper_param["weight_data"]
                 weight_pde = self.hyper_param["weight_pde"]
                 weight_border = self.hyper_param["weight_border"]
+                    # Data loading
+    
             train(
-                nb_epoch=self.hyper_param["nb_epoch"],
+                nb_epoch=1000,
                 train_loss=train_loss,
                 test_loss=test_loss,
                 weight_data_init=weight_data,

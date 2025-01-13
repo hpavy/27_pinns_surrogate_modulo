@@ -37,7 +37,7 @@ def charge_data(hyper_param, param_adim):
     x_norm_full, y_norm_full, t_norm_full, ya0_norm_full = [], [], [], []
     u_norm_full, v_norm_full, p_norm_full = [], [], []
 
-    f = 0.5 * (hyper_param["H"] / hyper_param["m"]) ** 0.5  # la fréquence de l'écoulement
+    f = 0.5 * (hyper_param["H"] / hyper_param["m"]) ** 0.5 / hyper_param['nb_period_plot']  # la fréquence de l'écoulement
     t_max = hyper_param['t_min'] + hyper_param['nb_period'] / f 
     for k in range(nb_simu):
         df = pd.read_csv("data/" + hyper_param["file"][k])
